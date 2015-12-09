@@ -1,0 +1,166 @@
+package fulliris
+import scala.io.Source
+import scala.util.Random
+import scala.collection.mutable.ArrayBuffer
+import scala.math._
+/*class Cluster ( points: Array[Array[Double]] ,centroidx :Double,centroidy :Double,centroidw :Double,centroidz :Double, id: Int)*/
+class Cluster (points: Array[Array[Double]],centroidx :Double,centroidy :Double,centroidw :Double,centroidz :Double, id: Int)
+{
+  
+  var cluster : Array[Array[Double]]=points;
+  
+  var clusterid: Int=id;
+  var centrex: Double=centroidx;
+  var centrey: Double=centroidy;
+  var centrew: Double=centroidw;
+  var centrez: Double=centroidz;
+  
+  def addPoint( x: Double, y:Double,w: Double, z:Double, index: Int)
+  {
+  cluster(index)(0)=x;
+  cluster(index)(1)=y;
+  cluster(index)(2)=w;
+  cluster(index)(3)=z;
+  
+ }
+  
+  
+  def printcluster()
+  {
+   for (i<-0 until 100)
+   {
+     for (j <-0 until 4)
+      {
+        print( " " +cluster(i)(j))
+      }
+    println();
+    } 
+   }
+  
+  
+  def getCentroid()
+  {
+    print(centrex);
+  }
+  
+  def updateCentroid(count:Int)=
+  {
+    var sumx=0.0
+    var sumy=0.0
+    var sumw=0.0
+    var sumz=0.0
+    
+    for ( i<-0 until count)
+    {
+      
+      sumx=sumx+cluster(i)(0);
+      sumy=sumy+cluster(i)(1);
+      sumw=sumw+cluster(i)(2);
+      sumz=sumz+cluster(i)(3);
+      
+    }
+    
+    centrex=(1*sumx)/count;
+    centrey=(1*sumy)/count;
+    centrew=(1*sumw)/count;
+    centrez=(1*sumz)/count;
+    
+  }
+  
+  
+  def distance(x: Double, y: Double, w: Double, z: Double) : Double=
+  {
+    return sqrt(pow((centrex-x),2)+pow((centrey-y),2)+pow((centrez-z),2)+pow((centrew-w),2));
+    
+  }
+
+}
+
+
+
+
+object readdata {
+  def main(args: Array[String])
+  {
+    val r=scala.util.Random
+   
+    val nrows = 150
+    val ncols = 4
+    val matrix = Array.ofDim[Double](nrows, ncols)
+    var emptymatrix=Array.ofDim[Double](nrows,ncols)
+    var emptymatrix2=Array.ofDim[Double](nrows,ncols)
+    var emptymatrix3=Array.ofDim[Double](nrows,ncols)
+    val bufferedSource = io.Source.fromFile("Fisher.csv")
+    var count = 0
+    
+    for (line <- bufferedSource.getLines) 
+    {
+        matrix(count) = line.split(",").map(_.trim.toDouble)
+        count += 1
+        
+    }
+  
+  
+ /* var col1=matrix.map{_(2)}
+  
+  val sum=col1.reduceLeft[Double](_+_)
+  print(sum/150)*/
+    
+  val cluster1=new Cluster(emptymatrix,11,38,27,58,1);
+  val cluster2=new Cluster(emptymatrix2,2,11,35,46,2);
+  
+
+   var  x,y,w,z :Double=0;
+   var dist1:Double=0;
+   
+   var count1=0;
+   var count2=0;
+   
+  
+  
+   
+   for (k <-0 until 100)
+   {
+    
+    
+     count1=0;
+     count2=0;
+     
+     
+     for (a<-0 until nrows)
+     {
+       x=matrix(a)(0);
+       y=matrix(a)(1);
+       w=matrix(a)(2);
+       z=matrix(a)(3);
+       var dist1=cluster1.distance(x,y,w,z);
+       var dist2=cluster2.distance(x,y,w,z);
+       
+
+       if (dist1 <= dist2)
+       {
+         cluster1.addPoint(x,y,w,z,count1)
+         count1=count1+1;
+         
+       }
+       else
+       {
+         cluster2.addPoint(x,y,w,z,count2)
+         count2=count2+1;
+       }
+     }
+     cluster1.updateCentroid(count1);
+     cluster2.updateCentroid(count2);
+     
+     
+     
+   }
+   print (" "+count1);
+  
+   
+     
+   }
+}
+   
+   
+

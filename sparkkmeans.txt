@@ -1,0 +1,59 @@
+
+import scala.util.Random
+import scala.collection.mutable.ArrayBuffer
+import scala.math._
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.SparkConf
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+import scala.io.Source.fromFile;
+
+
+object kmeans{
+
+def main(args: Array[String])
+  {
+    
+   Logger.getLogger("org").setLevel(Level.OFF)
+    Logger.getLogger("akka").setLevel(Level.OFF)
+    val conf = new SparkConf().setAppName("Simple Application").setMaster("local[2]")
+    val sc=new SparkContext(conf);
+    val nrows = 150
+    val ncols = 4
+    val matrix = Array.ofDim[Double](nrows, ncols)
+	
+    val bufferedSource = scala.io.Source.fromFile("Fisher.csv")
+
+    var count = 0
+    
+    for (line <- bufferedSource.getLines) 
+    {
+        matrix(count) = line.split(",").map(_.trim.toDouble)
+        count += 1
+    }
+
+    val newmatrix=sc.parallelize(matrix);
+
+    val kPoints = newmatrix.takeSample(withReplacement = false, 2, 42).toArray
+
+    for(i<-0 until 100000)
+    {
+
+        val closest=newmatrix.map(p => (p=>(closestPoint(p,kPoints),(p,1)));
+      
+
+    }
+    
+    
+
+    }
+}
+
+def closestPoint(p: Vector[Double], centre1: Double,centre2: Double,centre3: Double) 
+{
+  var index=0;
+
+  
+}
+
